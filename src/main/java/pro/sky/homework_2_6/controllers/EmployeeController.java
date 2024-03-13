@@ -1,6 +1,7 @@
 package pro.sky.homework_2_6.controllers;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pro.sky.homework_2_6.exceptions.EmployeeAlreadyAddedException;
@@ -9,6 +10,7 @@ import pro.sky.homework_2_6.exceptions.EmployeeStorageIsFullException;
 import pro.sky.homework_2_6.services.EmployeeService;
 
 @RestController
+@RequestMapping(path = "/employee")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -17,59 +19,51 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    @GetMapping
-    public String hello() {
-        return employeeService.hello();
-    }
-
-    @GetMapping(path = "/employee")
-    public String prompt() {
-        return employeeService.prompt();
-    }
-
-    @GetMapping(path = "/employee/add")
+    @GetMapping(path = "/add")
     public String add(@RequestParam("firstName") String fName,
                       @RequestParam("lastName") String lName) {
 
         try {
             return employeeService.add(fName, lName);
-        } catch (EmployeeAlreadyAddedException | EmployeeStorageIsFullException e) {
-            return "Ошибка: " + e;
+        } catch (EmployeeAlreadyAddedException e) {
+            throw new EmployeeAlreadyAddedException();
+        } catch (EmployeeStorageIsFullException e) {
+            throw new EmployeeStorageIsFullException();
         }
 
     }
 
-    @GetMapping(path = "/employee/find")
+    @GetMapping(path = "/find")
     public String find(@RequestParam("firstName") String fName,
                        @RequestParam("lastName") String lName) {
 
         try {
             return employeeService.find(fName, lName);
         } catch (EmployeeNotFoundException e) {
-            return "Ошибка: " + e;
+            throw new EmployeeNotFoundException();
         }
 
     }
 
-    @GetMapping(path = "/employee/remove")
+    @GetMapping(path = "/remove")
     public String remove(@RequestParam("firstName") String fName,
                          @RequestParam("lastName") String lName) {
 
         try {
             return employeeService.remove(fName, lName);
         } catch (EmployeeNotFoundException e) {
-            return "Ошибка: " + e;
+            throw new EmployeeNotFoundException();
         }
 
     }
 
-    @GetMapping(path = "/employee/browse")
+    @GetMapping(path = "/browse")
     public String browse() {
 
         try {
             return employeeService.browseAll();
         } catch (EmployeeNotFoundException e) {
-            return "Ошибка: " + e;
+            throw new EmployeeNotFoundException();
         }
 
     }
